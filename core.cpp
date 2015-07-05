@@ -1,12 +1,12 @@
 #include <iostream>
+#include <conio.h>
 #include <fstream>
 #include <string.h>
 #include <ctype.h>
 #include <sstream>
 #include <math.h>
 
-//Uncomment if you are using MSVC++ Compiler
-//#pragma warning(disable: 4996) 
+#pragma warning(disable: 4996)
 
 #define TOKEN_SIZE 64
 #define MAX_EQUATION_SIZE 512
@@ -30,13 +30,16 @@ enum DIFFERENTIATOR_TOKEN_TYPES
 };
 class differentiator 
 {
-	static const char *error_strings[];
+	public:
+		differentiator() : expression(nullptr)	{	}
 
-	char * expression;
+		void find_derivative(char * exp);
+		bool get_derivative(char * res);
 
-	void s_error(int err);
-	void s_error(char * info);
-	void s_error(int err, char * extra_info);	
+		virtual bool get_derivative(char *res, double value, double &rval)
+		{
+			return get_derivative(res);
+		}
 
 	protected:
 		ostringstream result;
@@ -48,16 +51,14 @@ class differentiator
 		void get_expression(char * exp) { strcpy(exp, result.str().c_str()); }
 		void set_expression(char * exp) { expression = exp; }
 
-	public:
-		differentiator() : expression(nullptr)	{	}
+	private:
+		static const char *error_strings[];
 
-		void find_derivative(char * exp);
-		bool get_derivative(char * res);
+		char * expression;
 
-		virtual bool get_derivative(char *res, double value, double &rval)
-		{
-			return get_derivative(res);
-		}
+		void s_error(int err);
+		void s_error(char * info);
+		void s_error(int err, char * extra_info);		
 };
 const char *differentiator::error_strings[] =
 {
@@ -257,7 +258,6 @@ bool differentiator::get_derivative(char * res)
 /*****************************************************************************************************************************/
 class enhanced_differentiator : public differentiator
 {
-	double calculate(double value);
 	public:
 		bool get_derivative(char * res,double value,double &rval) override
 		{
@@ -268,6 +268,8 @@ class enhanced_differentiator : public differentiator
 			}
 			return success;
 		}
+	private:
+		double calculate(double value);
 };
 double enhanced_differentiator::calculate(double value)
 {
